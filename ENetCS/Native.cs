@@ -70,7 +70,7 @@ namespace ENet
 
         #region Host Functions
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int enet_host_compress_with_range_encoder(ENetHost* host);
+        public static extern int enet_host_compress_with_range_coder(ENetHost* host);
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern ENetHost* enet_host_create(ENetAddress* address,

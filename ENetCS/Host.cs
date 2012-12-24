@@ -104,10 +104,10 @@ namespace ENet
             packet.NativeData = null; // Broadcast automatically clears this.
         }
 
-        public void CompressWithRangeEncoder()
+        public void CompressWithRangeCoder()
         {
             CheckCreated();
-            Native.enet_host_compress_with_range_encoder(_host);
+            Native.enet_host_compress_with_range_coder(_host);
         }
 
         public void DoNotCompress()
