@@ -1,30 +1,15 @@
-﻿#region License
-/*
-ENet for C#
-Copyright (c) 2011 James F. Bellinger <jfb@zer7.com>
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
-#endregion
+﻿#region
 
 using System;
 using System.Runtime.InteropServices;
 
+#endregion
+
 namespace ENet
 {
-    public unsafe static partial class Native
+    public static unsafe partial class Native
     {
-        const string LIB = "ENet.dll";
+        private const string LIB = "ENet.dll";
 
         public const int ENET_PEER_PACKET_THROTTLE_SCALE = 32;
         public const int ENET_PEER_PACKET_THROTTLE_ACCELERATION = 2;
@@ -38,6 +23,7 @@ namespace ENet
         public const uint ENET_HOST_BROADCAST = 0xffffffff;
 
         #region Address Functions
+
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int enet_address_set_host(ref ENetAddress address, byte* hostName);
 
@@ -55,9 +41,11 @@ namespace ENet
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int enet_address_get_host_ip(ref ENetAddress address, byte[] hostIP, IntPtr ipLength);
+
         #endregion
 
         #region Global Functions
+
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern void enet_deinitialize();
 
@@ -66,19 +54,21 @@ namespace ENet
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int enet_initialize_with_callbacks(uint version, ref ENetCallbacks inits);
+
         #endregion
 
         #region Host Functions
+
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int enet_host_compress_with_range_coder(ENetHost* host);
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern ENetHost* enet_host_create(ENetAddress* address,
-            IntPtr peerLimit, IntPtr channelLimit, uint incomingBandwidth, uint outgoingBandwidth);
+                                                        IntPtr peerLimit, IntPtr channelLimit, uint incomingBandwidth, uint outgoingBandwidth);
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern ENetHost* enet_host_create(ref ENetAddress address,
-            IntPtr peerLimit, IntPtr channelLimit, uint incomingBandwidth, uint outgoingBandwidth);
+                                                        IntPtr peerLimit, IntPtr channelLimit, uint incomingBandwidth, uint outgoingBandwidth);
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern void enet_host_destroy(ENetHost* host);
@@ -109,17 +99,21 @@ namespace ENet
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int enet_host_service(ENetHost* host, out ENetEvent @event, uint timeout);
+
         #endregion
 
         #region Miscellaneous Functions
+
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint enet_time_get();
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern void enet_time_set(uint newTimeBase);
+
         #endregion
 
         #region Packet Functions
+
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern ENetPacket* enet_packet_create(void* data, IntPtr dataLength, PacketFlags flags);
 
@@ -128,9 +122,11 @@ namespace ENet
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int enet_packet_resize(ENetPacket* packet, IntPtr dataLength);
+
         #endregion
 
         #region Peer Functions
+
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern void enet_peer_throttle_configure(ENetPeer* peer, uint interval, uint acceleration, uint deceleration);
 
@@ -154,26 +150,44 @@ namespace ENet
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern void enet_peer_disconnect_later(ENetPeer* peer, uint data);
+
         #endregion
 
         #region C# Utility
+
         public static bool memcmp(byte[] s1, byte[] s2)
         {
-            if (s1 == null || s2 == null) { throw new ArgumentNullException(); }
-            if (s1.Length != s2.Length) { return false; }
+            if (s1 == null || s2 == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (s1.Length != s2.Length)
+            {
+                return false;
+            }
 
-            for (int i = 0; i < s1.Length; i++) { if (s1[i] != s2[i]) { return false; } }
+            for (var i = 0; i < s1.Length; i++)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
             return true;
         }
 
         public static int strlen(byte[] s)
         {
-            if (s == null) { throw new ArgumentNullException(); }
+            if (s == null)
+            {
+                throw new ArgumentNullException();
+            }
 
             int i;
             for (i = 0; i < s.Length && s[i] != 0; i++) ;
             return i;
         }
+
         #endregion
     }
 }

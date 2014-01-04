@@ -1,24 +1,10 @@
-﻿#region License
-/*
-ENet for C#
-Copyright (c) 2011 James F. Bellinger <jfb@zer7.com>
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
-#endregion
+﻿#region
 
 using System;
 using System.Threading;
+using ENet;
+
+#endregion
 
 namespace ENetDemo
 {
@@ -39,18 +25,18 @@ namespace ENetDemo
     //
     // Also, the ENet.dll included with this download is 32-bit. So, if you use it instead
     //  of a version you compile yourself, make sure to set Platform to x86 in Build.
-    class Program
+    internal class Program
     {
-        static void Server()
+        private static void Server()
         {
-            using (ENet.Host host = new ENet.Host())
+            using (var host = new Host())
             {
                 host.Create(5000, 1);
-                ENet.Peer peer = new ENet.Peer();
+                var peer = new Peer();
 
                 while (host.Service(1) >= 0)
                 {
-                    ENet.Event @event;
+                    Event @event;
 
                     while (host.CheckEvents(out @event) > 0)
                     {
@@ -58,16 +44,23 @@ namespace ENetDemo
 
                         switch (@event.Type)
                         {
-                            case ENet.EventType.Connect:
+                            case EventType.Connect:
                                 peer = @event.Peer;
-                                for (int i = 0; i < 200; i++) { peer.Send((byte)i, new byte[] { 0, 0 }); }
+                                for (var i = 0; i < 200; i++)
+                                {
+                                    peer.Send((byte) i, new byte[] {0, 0});
+                                }
                                 break;
 
-                            case ENet.EventType.Receive:
-                                byte[] data = @event.Packet.GetBytes();
-                                ushort value = BitConverter.ToUInt16(data, 0);
-                                if (value % 1000 == 1) { Console.WriteLine("  Server: Ch={0} Recv={1}", @event.ChannelID, value); }
-                                value++; peer.Send(@event.ChannelID, BitConverter.GetBytes(value));
+                            case EventType.Receive:
+                                var data = @event.Packet.GetBytes();
+                                var value = BitConverter.ToUInt16(data, 0);
+                                if (value%1000 == 1)
+                                {
+                                    Console.WriteLine("  Server: Ch={0} Recv={1}", @event.ChannelID, value);
+                                }
+                                value++;
+                                peer.Send(@event.ChannelID, BitConverter.GetBytes(value));
                                 @event.Packet.Dispose();
                                 break;
                         }
@@ -76,30 +69,35 @@ namespace ENetDemo
             }
         }
 
-        static void Client()
+        private static void Client()
         {
-            using (ENet.Host host = new ENet.Host())
+            using (var host = new Host())
             {
                 host.Create(null, 1);
 
-                ENet.Address address = new ENet.Address();
-                address.SetHost("127.0.0.1"); address.Port = 5000;
+                var address = new Address();
+                address.SetHost("127.0.0.1");
+                address.Port = 5000;
 
-                ENet.Peer peer = host.Connect(address, 200, 1234);
+                var peer = host.Connect(address, 200, 1234);
                 while (host.Service(1) >= 0)
                 {
-                    ENet.Event @event;
+                    Event @event;
                     while (host.CheckEvents(out @event) > 0)
                     {
                         //Console.WriteLine("Client: " + @event.Type.ToString());
 
                         switch (@event.Type)
                         {
-                            case ENet.EventType.Receive:
-                                byte[] data = @event.Packet.GetBytes();
-                                ushort value = BitConverter.ToUInt16(data, 0);
-                                if (value % 1000 == 0) { Console.WriteLine("  Client: Ch={0} Recv={1}", @event.ChannelID, value); }
-                                value++; peer.Send(@event.ChannelID, BitConverter.GetBytes(value));
+                            case EventType.Receive:
+                                var data = @event.Packet.GetBytes();
+                                var value = BitConverter.ToUInt16(data, 0);
+                                if (value%1000 == 0)
+                                {
+                                    Console.WriteLine("  Client: Ch={0} Recv={1}", @event.ChannelID, value);
+                                }
+                                value++;
+                                peer.Send(@event.ChannelID, BitConverter.GetBytes(value));
                                 @event.Packet.Dispose();
                                 break;
                         }
@@ -107,19 +105,22 @@ namespace ENetDemo
                 }
             }
         }
-        static void Main(string[] args)
+
+        private static void Main(string[] args)
         {
             Console.WriteLine("ENet demo");
-            ENet.Library.Initialize();
+            Library.Initialize();
 
-            Thread server = new Thread(Server); server.Start();
+            var server = new Thread(Server);
+            server.Start();
             Thread.Sleep(250);
-            Thread client = new Thread(Client); client.Start();
+            var client = new Thread(Client);
+            client.Start();
 
             server.Join();
             client.Join();
 
-            ENet.Library.Deinitialize();
+            Library.Deinitialize();
             Console.WriteLine("Press Enter to exit");
             Console.ReadLine();
         }

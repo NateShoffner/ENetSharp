@@ -1,4 +1,8 @@
-﻿using System.Reflection;
+﻿#region
+
+using System.Reflection;
+
+#endregion
 
 [assembly: AssemblyTitle("ENet")]
 [assembly: AssemblyProduct("ENet for C#")]
