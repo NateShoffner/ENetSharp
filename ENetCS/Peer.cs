@@ -101,6 +101,14 @@ namespace ENet
             get { return _peer != null; }
         }
 
+        public uint RoundTripTime
+        {
+            get
+            {
+                return _peer->lastRoundTripTime;
+            }
+        }
+
         public Native.ENetPeer* NativeData
         {
             get { return _peer; }
